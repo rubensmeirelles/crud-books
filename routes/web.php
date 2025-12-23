@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
@@ -23,6 +24,13 @@ Route::middleware('auth')->prefix('user')->group(function () {
     Route::put('/', [UserController::class, 'update'])->name('user.update');
     Route::patch('/password', [UserController::class, 'updatePassword'])->name('user.update.password');
     Route::patch('/photo', [UserController::class, 'updatePhoto'])->name('user.update.photo');
+});
+
+Route::middleware('auth')->prefix('book')->group(function () {
+    // Route::get('/', [BookController::class, 'index'])->name('book.index');
+    Route::post('/', [BookController::class, 'store'])->name('book.store');
+    // Route::put('/', [BookController::class, 'update'])->name('book.update');
+    // Route::delete('/', [BookController::class, 'destroy'])->name('book.destroy');
 });
 
 

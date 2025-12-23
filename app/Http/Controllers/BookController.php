@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Book\StoreBookRequest;
+use App\Models\Book;
+use App\Repositories\Contracts\BookRepositoryInterface;
+use App\Services\ImageUploadService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class BookController extends Controller
+{
+    private BookRepositoryInterface $bookRepository;
+
+    public function __construct(BookRepositoryInterface $bookRepository)
+    {
+        $this->bookRepository = $bookRepository;
+    }
+    public  function store(StoreBookRequest $request)
+    {
+        $form = $request->validated();
+
+        if (isset($form[Book::FAVORITE]) && $form[Book::FAVORITE] === 'on') {
+            $form[Book::FAVORITE] = true;
+        } else {
+            $form[Book::FAVORITE] = false;
+        }
+
+        if (isset($form[Book::COMPLETE]) && $form[Book::COMPLETE] === 'on') {
+            $form[Book::COMPLETE] = true;
+        } else {
+            $form[Book::COMPLETE] = false;
+        }
+
+        $form['user_id'] = Auth::user()->id;
+
+        if (isset($form['cover']))
+        {
+            $imageUploadService = new ImageUploadService('public');
+
+            $filename = $imageUploadService->upload(
+                $request->file('cover'),
+                env('USER_DIR_UPLOAD')
+            );
+
+            $form['cover'] = $filename;
+        }
+
+        if (!$this->bookRepository->create($form))
+        {
+            return redirect()->back()->withErrors(['Erro ao cadastrar livro.']);
+        }
+
+        return redirect()->back()->with('success', 'Livro cadastrado.');
+
+        dd($form);
+
+        // Here you would typically save the data to the database
+        // For example: Book::create($data);
+
+        return redirect()->back()->with('success', 'Book added successfully!');
+    }
+}

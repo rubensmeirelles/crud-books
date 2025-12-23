@@ -23,4 +23,22 @@ class UserRepository implements UserRepositoryInterface
         return User::find($id);
     }
 
+    public function update(int $id, array $data): bool
+    {
+        $user = User::find($id);
+        return $user->update($data);
+    }
+
+    public function updatePassword(int $id, string $password): bool
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return false;
+        }
+
+        $user->password = bcrypt($password);
+
+        return $user->save();
+    }
+
 }

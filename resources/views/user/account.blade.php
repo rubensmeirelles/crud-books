@@ -22,14 +22,18 @@
 <body class="bg-light">
 
     <div class="container py-4 max-container">
-
+        <div>
+            @include('partials.alerts')
+        </div>
         <!-- Form dados -->
         <div class="card border-danger mb-4">
             <div class="card-body">
                 <h5 class="card-title">Dados cadastrais</h5>
-                <form>
-                    <input type="text" name="name" class="form-control mb-2" placeholder="Nome">
-                    <textarea name="bio" rows="3" class="form-control mb-3" placeholder="Bio"></textarea>
+                <form method="POST" action="{{ route('user.update') }}">
+                    @method('put')
+                    @csrf
+                    <input type="text" name="name" class="form-control mb-2" placeholder="Nome" value="{{ $user['name'] }}">
+                    <textarea name="bio" rows="3" class="form-control mb-3" placeholder="Bio">{{ $user['bio'] }}</textarea>
                     <button type="submit" class="btn btn-success">Salvar</button>
                 </form>
             </div>
@@ -39,7 +43,9 @@
         <div class="card border-danger mb-4">
             <div class="card-body">
                 <h6 class="card-title">Alterar senha</h6>
-                <form id="formSenha" onsubmit="return validarSenha()">
+                <form id="formSenha" onsubmit="return validarSenha()" method="POST" action="{{ route('user.update.password') }}">
+                    @method('patch')
+                    @csrf
                     <div class="d-flex gap-2 mb-2">
                         <input type="password" name="password" id="novaSenha" class="form-control"
                             placeholder="Digite a nova senha">
@@ -80,20 +86,21 @@
             }
         </script>
 
-
         <!-- Form photo -->
         <div class="card border-danger mb-4">
             <div class="card-body">
                 <h6 class="card-title">Alterar imagem (250x250)</h6>
-                <form>
+                <form method="POST" action="{{ route('user.update.photo') }}" enctype="multipart/form-data">
+                    @method('patch')
+                    @csrf
                     <div class="d-flex gap-2 mb-3">
-                        <input type="file" class="form-control" id="photoInput" accept="image/*">
+                        <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*">
                         <button type="submit" class="btn btn-success">Alterar</button>
                     </div>
 
                     <div class="d-flex justify-content-around">
                         <div class="text-center">
-                            <img src="https://via.placeholder.com/100x100.png?text=Atual" class="profile-img"
+                            <img src="{{ $user['photo'] }}" class="profile-img"
                                 id="fotoAtual">
                             <div class="mt-2">Atual</div>
                         </div>
